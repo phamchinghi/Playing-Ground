@@ -11,10 +11,11 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
-import com.pcn.playing_ground.security.CustomUserDetailsService;
 //import com.pcn.playing_ground.security.jwt.JwtAuthenticationFilter;
 //import com.pcn.playing_ground.security.jwt.JwtTokenProvider;
+import com.pcn.playing_ground.service.impl.UserDetailsServiceImpl;
 
 @Configuration
 @EnableMethodSecurity
@@ -26,23 +27,28 @@ public class SecurityConfig {
 //    private JwtTokenProvider jwtTokenProvider;
 	
 	@Autowired
-	private CustomUserDetailsService customUserDetailsService;
+	private UserDetailsServiceImpl userDetailServiceImpl;
 
 	@Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
+    SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http.csrf(csrf -> csrf.disable())
             .authorizeHttpRequests((requests) -> requests
-                .requestMatchers("/", "/home", "/register",AppConstants.CSS, AppConstants.JS, AppConstants.IMG, AppConstants.SCSS,AppConstants.VENDOR).permitAll()
-                .requestMatchers("/admin/**").hasRole("ADMIN")
+                .requestMatchers("/home", "/register", "/register/save", AppConstants.GET, AppConstants.CSS, AppConstants.JS, AppConstants.IMG, AppConstants.SCSS,AppConstants.VENDOR).permitAll()
+//                .requestMatchers("/api/auth/**").permitAll()
                 .anyRequest().authenticated()
             )
             .formLogin((form) -> form
-                .loginPage("/login")
+        		.loginPage("/login")
+                .loginProcessingUrl("/perform_login")
+                .defaultSuccessUrl("/home", true)
+                .failureUrl("/register?error=true")
                 .permitAll()
             )
-            .logout((logout) -> logout.permitAll()
-    		.logoutSuccessUrl("/login?logout"))
-            .userDetailsService(customUserDetailsService);
+            .logout(logout -> logout
+                    .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
+                    .permitAll()
+            )
+            .userDetailsService(userDetailServiceImpl);
         
         return http.build();
     }
@@ -50,7 +56,7 @@ public class SecurityConfig {
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration, HttpSecurity http) throws Exception {
     	AuthenticationManagerBuilder authenticationManagerBuilder = 
                 http.getSharedObject(AuthenticationManagerBuilder.class);
-            authenticationManagerBuilder.userDetailsService(customUserDetailsService)
+            authenticationManagerBuilder.userDetailsService(userDetailServiceImpl)
                 .passwordEncoder(passwordEncoder());
             return authenticationManagerBuilder.build();
     }

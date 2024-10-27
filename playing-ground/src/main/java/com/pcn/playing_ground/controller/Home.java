@@ -18,6 +18,6 @@ public class Home {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		String username = auth.getName();
         model.addAttribute("username", username);
-        return AppConstants.MAIN;
+        return AppConstants.INDEX;
 	}
 }
