@@ -45,7 +45,9 @@ public class SecurityConfig {
                 .permitAll()
             )
             .logout(logout -> logout
-                    .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
+            		.logoutSuccessUrl("/login?logout")
+                    .invalidateHttpSession(true)
+                    .deleteCookies("JSESSIONID")
                     .permitAll()
             )
             .userDetailsService(userDetailServiceImpl);

@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.pcn.playing_ground.dto.request.SignupRequest;
 import com.pcn.playing_ground.entity.User;
@@ -20,7 +21,7 @@ public class UserServiceImpl implements UserService{
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    
+    @Override
     public User insertUser(SignupRequest request) {
         User user = new User();
         user.setUsername(request.getUsername());
@@ -32,6 +33,7 @@ public class UserServiceImpl implements UserService{
         return userRepo.save(user);
     }
     
+    @Override
     public boolean authenticate(String username, String password) {
         Optional<User> userOptional = userRepo.findByUsername(username);
         
@@ -43,27 +45,34 @@ public class UserServiceImpl implements UserService{
         return false;
     }
     
+    @Override
     public User savePassword(User user) {
         user.setPasswrd(passwordEncoder.encode(user.getPasswrd()));
         return userRepo.save(user);
     }
     
+    @Override
     public Optional<User> findByUsername(String username) {
         return userRepo.findByUsername(username);
     }
     
+    @Override
     public Optional<User> findByEmail(String email) {
         return userRepo.findByEmail(email);
     }
     
+    @Override
     public Boolean existsByUsername(String username) {
     	return userRepo.existsByUsername(username);
     }
     
+    @Override
     public Boolean existsByEmail(String email) {
     	return userRepo.existsByEmail(email);
     }
 	
+    @Transactional
+    @Override
 	public User save(User user) {
 		return userRepo.save(user);
 	}
