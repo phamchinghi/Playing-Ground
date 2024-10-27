@@ -1,13 +1,7 @@
 package com.pcn.playing_ground.entity;
 
-import java.sql.Timestamp;
-import java.util.Collection;
+import java.time.LocalDate;
 import java.util.Set;
-import java.util.stream.Collectors;
-
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -22,26 +16,29 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "USERS")
-public class User implements UserDetails{
+public class User{
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userId;
     private String username;
     private String passwrd; // hash password
     private String email;
-    private String fullname;
+    private String firstname;
+    private String lastname;
     private String phone;
     @Column(nullable = false)
     private boolean is_active;
     private String update_by;
-    private Timestamp dattime;
-    private Timestamp created_at;
+    private LocalDate dattime;
+    @Column(name = "created_at", nullable = false, updatable = false, insertable = false)
+    private LocalDate created_at;
     
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "USER_ROLES",
             joinColumns = @JoinColumn(name = "USER_ID"),
             inverseJoinColumns = @JoinColumn(name = "ROLE_ID"))
     private Set<Role> roles;
+    
 
 	public Long getUserId() {
 		return userId;
@@ -75,12 +72,19 @@ public class User implements UserDetails{
 		this.email = email;
 	}
 
-	public String getFullname() {
-		return fullname;
+	public String getFirstname() {
+		return firstname;
 	}
 
-	public void setFullname(String fullname) {
-		this.fullname = fullname;
+	public void setFirstname(String firstname) {
+		this.firstname = firstname;
+	}
+	public String getLastname() {
+		return lastname;
+	}
+	
+	public void setLastname(String lastname) {
+		this.lastname = lastname;
 	}
 
 	public String getPhone() {
@@ -107,19 +111,19 @@ public class User implements UserDetails{
 		this.update_by = updateby;
 	}
 
-	public Timestamp getDatime() {
+	public LocalDate getDatime() {
 		return dattime;
 	}
 
-	public void setDatime(Timestamp datime) {
+	public void setDatime(LocalDate datime) {
 		this.dattime = datime;
 	}
 
-	public Timestamp getCreated_at() {
+	public LocalDate getCreated_at() {
 		return created_at;
 	}
 
-	public void setCreated_at(Timestamp created_at) {
+	public void setCreated_at(LocalDate created_at) {
 		this.created_at = created_at;
 	}
 
@@ -129,17 +133,5 @@ public class User implements UserDetails{
 
 	public void setRoles(Set<Role> roles) {
 		this.roles = roles;
-	}
-
-	@Override
-	public Collection<? extends GrantedAuthority> getAuthorities() {
-		return getRoles().stream()
-                .map(role -> new SimpleGrantedAuthority(role.getRolename()))
-                .collect(Collectors.toList());
-	}
-
-	@Override
-	public String getPassword() {
-		return getPasswrd();
 	}
 }

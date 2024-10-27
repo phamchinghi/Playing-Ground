@@ -1,7 +1,8 @@
 package com.pcn.playing_ground.entity;
 
-import java.sql.Timestamp;
+import java.time.LocalDate;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -17,13 +18,10 @@ public class Role {
     private String roleName;
     private String descriptions;
     private String update_by;
-    private Timestamp dattime;
-    private Timestamp created_at;
-    
-    enum Roles {
-        USER, ADMIN
-    }
-    
+    private LocalDate dattime;
+    @Column(name = "created_at", nullable = false, updatable = false, insertable = false)
+    private LocalDate created_at = LocalDate.now();;
+        
 	public Long getRoleId() {
 		return roleId;
 	}
@@ -48,16 +46,16 @@ public class Role {
 	public void setUpdateby(String updateby) {
 		this.update_by = updateby;
 	}
-	public Timestamp getDatime() {
+	public LocalDate getDatime() {
 		return dattime;
 	}
-	public void setDatime(Timestamp datime) {
+	public void setDatime(LocalDate datime) {
 		this.dattime = datime;
 	}
-	public Timestamp getCreated_at() {
+	public LocalDate getCreated_at() {
 		return created_at;
 	}
-	public void setCreated_at(Timestamp created_at) {
+	public void setCreated_at(LocalDate created_at) {
 		this.created_at = created_at;
 	}
 }

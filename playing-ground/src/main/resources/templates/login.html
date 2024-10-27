@@ -43,7 +43,7 @@
                                     <div class="text-center">
                                         <h1 class="h4 text-gray-900 mb-4" th:text="${message}"></h1>
                                     </div>
-                                    <form class="user" th:action="@{/login}" method="post">
+                                    <form class="user" th:action="@{/perform_login}" method="post">
                                         <div class="form-group">
                                             <input type="text" class="form-control form-control-user"
                                                 id="username" name="username" aria-describedby="emailHelp"
@@ -69,7 +69,7 @@
                                         <a class="small" href="forgot-password.html">Forgot Password?</a>
                                     </div>
                                     <div class="text-center">
-                                        <a class="small" href="register.html">Create an Account!</a>
+                                    	<a th:href="@{/register}">Create an Account!</a>
                                     </div>
 									<div th:if="${param.error}">Thông tin đăng nhập không chính xác.</div>
 									<div th:if="${param.logout}">Bạn đã đăng xuất thành công.</div>
