@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport"
+	content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="description" content="">
+<meta name="author" content="">
+
+<title>Register</title>
+
+<!-- Custom fonts for this template-->
+<link th:href="@{/vendor/fontawesome-free/css/all.min.css}"
+	rel="stylesheet" type="text/css">
+<link
+	th:href="@{/https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i}"
+	rel="stylesheet">
+
+<!-- Custom styles for this template-->
+<link th:href="@{/css/sb-admin-2.min.css}" rel="stylesheet">
+
+</head>
+
+<body class="bg-gradient-primary">
+
+	<div class="container">
+
+		<div class="card o-hidden border-0 shadow-lg my-5">
+			<div class="card-body p-0">
+				<!-- Nested Row within Card Body -->
+				<div class="row">
+					<div class="col-lg-5 d-none d-lg-block bg-register-image"></div>
+					<div class="col-lg-7">
+						<div class="p-5">
+							<div class="text-center">
+								<h1 class="h4 text-gray-900 mb-4">Create an Account!</h1>
+							</div>
+							<form class="user" method="post" role="form"
+								th:action="@{/register/save}" th:object="${registerRequest}">
+								<div class="form-group row">
+									<div class="col-sm-6 mb-3 mb-sm-0">
+										<input type="text" class="form-control form-control-user"
+											id="firstname" name="firstname" th:field="*{firstname}"
+											placeholder="First Name">
+									</div>
+									<div class="col-sm-6">
+										<input type="text" class="form-control form-control-user"
+											id="lastname" name="lastname" th:field="*{lastname}"
+											placeholder="Last Name">
+									</div>
+								</div>
+								<div class="form-group">
+									<input type="email" class="form-control form-control-user"
+										id="email" name="email" th:field="*{email}"
+										placeholder="Email Address">
+								</div>
+								<div class="form-group">
+									<input type="text" class="form-control form-control-user"
+										id="username" name="username" th:field="*{username}"
+										placeholder="User name">
+								</div>
+								<div class="form-group row">
+									<div class="col-sm-6 mb-3 mb-sm-0">
+										<input type="password" class="form-control form-control-user"
+											id="password" name="password" th:field="*{password}"
+											placeholder="Password">
+									</div>
+									<div class="col-sm-6">
+										<input type="password" class="form-control form-control-user"
+											id="confirmPassword" name="confirmPassword"
+											th:field="*{confirmPassword}" placeholder="Repeat Password">
+									</div>
+								</div>
+								<!-- <div class="dropdown mb-4">
+                                        <button class="btn btn-primary dropdown-toggle" type="button"
+                                            id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true"
+                                            aria-expanded="false">
+                                            Dropdown
+                                        </button>
+                                        <div class="dropdown-menu animated--fade-in"
+                                            aria-labelledby="dropdownMenuButton">
+                                            <a class="dropdown-item" href="#">Action</a>
+                                            <a class="dropdown-item" href="#">Another action</a>
+                                            <a class="dropdown-item" href="#">Something else here</a>
+                                        </div>
+                                    </div> -->
+								<button type="submit"
+									class="btn btn-primary btn-user btn-block form-group">
+									Register Account</button>
+								<div class="form-group row" th:if="${#fields.hasErrors()}">
+									<div class="col-md-12 alert alert-warning alert-icon "
+										role="alert">
+										<div class="alert-icon-aside">
+											<i class="fa fa-exclamation-circle" style="color: red"></i>
+											<div style="color: red" class="text-red-50"
+												th:errors="*{firstname}"
+												th:if="${#fields.hasErrors('firstname')}"></div>
+											<div style="color: red" class="text-red-50"
+												th:errors="*{lastname}"
+												th:if="${#fields.hasErrors('lastname')}"></div>
+											<div style="color: red" class="text-red-50"
+												th:errors="*{username}"
+												th:if="${#fields.hasErrors('username')}"></div>
+											<div style="color: red" class="text-red-50"
+												th:errors="*{email}" th:if="${#fields.hasErrors('email')}"></div>
+											<div style="color: red" class="text-red-50"
+												th:errors="*{password}"
+												th:if="${#fields.hasErrors('password')}"></div>
+										</div>
+									</div>
+								</div>
+								<div th:if="${param.success}">
+									<div class="alert alert-success">
+										<strong>Success!</strong> registered to our app!
+									</div>
+								</div>
+								<hr>
+							</form>
+							<div class="text-center">
+								<a class="small" th:href="@{/forgot-password.html}">Forgot
+									Password?</a>
+							</div>
+							<div class="text-center">
+								<a class="small" th:href="@{/login.html}">Already have an
+									account? Login!</a>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+	</div>
+
+	<!-- Bootstrap core JavaScript-->
+	<script src="vendor/jquery/jquery.min.js"></script>
+	<script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+	<!-- Core plugin JavaScript-->
+	<script src="vendor/jquery-easing/jquery.easing.min.js"></script>
+
+	<!-- Custom scripts for all pages-->
+	<script src="js/sb-admin-2.min.js"></script>
+
+</body>
+
+</html>
