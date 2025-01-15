@@ -16,12 +16,17 @@ import com.pcn.playing_ground.service.UserService;
 @Service
 public class UserServiceImpl implements UserService{
 
-	@Autowired
     private UserRepo userRepo;
-    @Autowired
     private PasswordEncoder passwordEncoder;
 
-    @Override
+	@Autowired
+    public UserServiceImpl(UserRepo userRepo, PasswordEncoder passwordEncoder) {
+		super();
+		this.userRepo = userRepo;
+		this.passwordEncoder = passwordEncoder;
+	}
+
+	@Override
     public User insertUser(SignupRequest request) {
         User user = new User();
         user.setUsername(request.getUsername());

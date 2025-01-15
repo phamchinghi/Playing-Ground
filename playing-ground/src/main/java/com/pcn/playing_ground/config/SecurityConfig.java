@@ -3,6 +3,7 @@ package com.pcn.playing_ground.config;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -10,47 +11,37 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-//import com.pcn.playing_ground.security.jwt.JwtAuthenticationFilter;
-//import com.pcn.playing_ground.security.jwt.JwtTokenProvider;
+import com.pcn.playing_ground.JWT.JwtAuthenticationFilter;
 import com.pcn.playing_ground.service.impl.UserDetailsServiceImpl;
 
 @Configuration
 @EnableMethodSecurity
 public class SecurityConfig {
 	
-//	@Autowired
-//    private JwtAuthenticationFilter jwtAuthenticationFilter;
-//	@Autowired
-//    private JwtTokenProvider jwtTokenProvider;
-	
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
+	private final UserDetailsServiceImpl userDetailServiceImpl;
+	private final AuthenticationEntryPoint jwtAuthenEntry;
 	@Autowired
-	private UserDetailsServiceImpl userDetailServiceImpl;
-
+	public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter, UserDetailsServiceImpl userDetailServiceImpl, AuthenticationEntryPoint jwtAuthenEntry) {
+		this.jwtAuthenticationFilter = jwtAuthenticationFilter;
+		this.userDetailServiceImpl = userDetailServiceImpl;
+		this.jwtAuthenEntry = jwtAuthenEntry;
+	}
 	@Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(csrf -> csrf.disable())
             .authorizeHttpRequests((requests) -> requests
-                .requestMatchers("/home", "/register", "/register/save", AppConstants.GET, AppConstants.CSS, AppConstants.JS, AppConstants.IMG, AppConstants.SCSS,AppConstants.VENDOR).permitAll()
-//                .requestMatchers("/api/auth/**").permitAll()
+                .requestMatchers("/auth/**").permitAll()
+                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 .anyRequest().authenticated()
             )
-            .formLogin((form) -> form
-        		.loginPage("/login")
-                .loginProcessingUrl("/perform_login")
-                .defaultSuccessUrl("/home", true)
-                .failureUrl("/register?error=true")
-                .permitAll()
-            )
-            .logout(logout -> logout
-            		.logoutSuccessUrl("/login?logout")
-                    .invalidateHttpSession(true)
-                    .deleteCookies("JSESSIONID")
-                    .permitAll()
-            )
-            .userDetailsService(userDetailServiceImpl);
+            .exceptionHandling(exception -> exception
+            		.authenticationEntryPoint(jwtAuthenEntry))
+            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
         
         return http.build();
     }
