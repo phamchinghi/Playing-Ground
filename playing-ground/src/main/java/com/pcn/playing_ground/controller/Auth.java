@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.pcn.playing_ground.common.exceptions.FieldNotBlankException;
 import com.pcn.playing_ground.common.exceptions.RoleNotFoundException;
 import com.pcn.playing_ground.common.exceptions.UserAlreadyExistsException;
 import com.pcn.playing_ground.dto.response.ApiResponseDto;
@@ -42,44 +43,22 @@ import jakarta.validation.Valid;
 public class Auth {
 	private static Logger LOGGER = LoggerFactory.getLogger(Auth.class);
 
-    private final AuthenticationManager authenticationManager;
-    private final JwtTokenUtils jwtTokenUtils;
-    private final UserService userService;
 	private final AuthService authService;
 
 	@Autowired
-	public Auth(AuthenticationManager authenticationManager, UserService userService, JwtTokenUtils jwtTokenUtils, AuthService authService) {
-		this.authenticationManager = authenticationManager;
-		this.userService = userService;
-		this.jwtTokenUtils = jwtTokenUtils;
+	public Auth(AuthService authService) {
 		this.authService = authService;
 	}
 
 
 	@PostMapping("/signup")
-	public ResponseEntity<ApiResponseDto<?>> registerUser(@RequestBody @Valid SignupRequest request)
+	public ResponseEntity<ApiResponseDto<?>> registerUser(@RequestBody SignupRequest request)
 			throws RoleNotFoundException, UserAlreadyExistsException {
 		return authService.signUpUser(request);
 	}
 
 	@PostMapping("/login")
-    public ResponseEntity<?> processLogin(@RequestBody LoginRequest request) {
-		try {
-			Map<String, Object> response = new HashMap<>();
-			UsernamePasswordAuthenticationToken authenToken = new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword());
-			Authentication authentication = authenticationManager.authenticate(authenToken);
-			if(!authentication.isAuthenticated()) {
-				response.put("message", "Unauthenticated");
-			}
-//			var userDetail = userService.findByUsername(authentication.getName());
-			String jwt = jwtTokenUtils.generateToken(authentication.getName());
-			response.put("token", jwt);
-//			response.put("user", userDetail);
-			response.put("message", "Login successful");
-
-			return ResponseEntity.ok(response);
-		} catch (AuthenticationException e) {
-			return ResponseEntity.ofNullable(e);
-		}
+    public ResponseEntity<?> processLogin(@RequestBody LoginRequest request) throws FieldNotBlankException {
+		return authService.login(request);
     }
 }

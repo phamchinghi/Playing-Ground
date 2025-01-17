@@ -23,7 +23,7 @@ import com.pcn.playing_ground.service.impl.UserDetailsServiceImpl;
 @Configuration
 @EnableMethodSecurity
 public class SecurityConfig {
-	
+
 	private final UserDetailsServiceImpl userDetailServiceImpl;
 	private final AuthenticationEntryPoint jwtAuthenEntry;
 	@Autowired
@@ -40,7 +40,7 @@ public class SecurityConfig {
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(csrf -> csrf.disable())
             .exceptionHandling(exception -> exception
-                .authenticationEntryPoint(jwtAuthenEntry))
+            .authenticationEntryPoint(jwtAuthenEntry))
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests((requests) -> requests
                 .requestMatchers("/auth/**").permitAll()
@@ -49,27 +49,20 @@ public class SecurityConfig {
             );
         http.authenticationProvider(authenticationProvider());
         http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
-        
+
         return http.build();
     }
-	
+
 	@Bean
     public DaoAuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-
         authProvider.setUserDetailsService(userDetailServiceImpl);
         authProvider.setPasswordEncoder(passwordEncoder());
-
         return authProvider;
     }
-	
+
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration, HttpSecurity http) throws Exception {
-//    	AuthenticationManagerBuilder authenticationManagerBuilder = 
-//                http.getSharedObject(AuthenticationManagerBuilder.class);
-//            authenticationManagerBuilder.userDetailsService(userDetailServiceImpl)
-//                .passwordEncoder(passwordEncoder());
-//            return authenticationManagerBuilder.build();
             return authenticationConfiguration.getAuthenticationManager();
     }
 

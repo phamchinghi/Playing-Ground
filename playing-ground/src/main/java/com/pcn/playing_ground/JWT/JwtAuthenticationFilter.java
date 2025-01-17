@@ -2,6 +2,8 @@ package com.pcn.playing_ground.JWT;
 
 import java.io.IOException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -17,7 +19,7 @@ import jakarta.servlet.http.HttpServletResponse;
 
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter{
-
+	private static Logger LOGGER = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
     private JwtTokenUtils jwtTokenUtil;
     private UserDetailsService userDetailsService;
 
@@ -45,8 +47,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter{
 					SecurityContextHolder.getContext().setAuthentication(authentication);
 				}
 			}
+            LOGGER.debug("Checking JWT authentication for request: {}", request.getRequestURI());
 		} catch (Exception e) {
-			
+			LOGGER.error("Cannot set user authentication: {}", e.getMessage());
 		}
 		filterChain.doFilter(request, response);
 	}
