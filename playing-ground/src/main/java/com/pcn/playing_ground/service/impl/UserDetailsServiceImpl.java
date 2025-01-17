@@ -17,7 +17,7 @@ import com.pcn.playing_ground.repository.UserRepo;
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService{
 
-	private UserRepo userRepo;
+	private final UserRepo userRepo;
 		
 	public UserDetailsServiceImpl(UserRepo userRepo) {
 
@@ -42,7 +42,7 @@ public class UserDetailsServiceImpl implements UserDetailsService{
 		Collection < ? extends GrantedAuthority> mapRoles;
 		
 		mapRoles = roles.stream()
-				.map(role -> new SimpleGrantedAuthority(role.getRolename()))
+				.map(role -> new SimpleGrantedAuthority(role.getRolename().toString()))
 				.collect(Collectors.toList());
 		
         return mapRoles;

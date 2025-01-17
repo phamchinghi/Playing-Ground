@@ -4,18 +4,18 @@ import java.security.Key;
 import java.util.Date;
 import java.util.function.Function;
 
+import com.pcn.playing_ground.controller.Auth;
+import io.jsonwebtoken.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jws;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 
 @Component
 public class JwtTokenUtils {
-
+	private static Logger LOGGER = LoggerFactory.getLogger(JwtTokenUtils.class);
 	@Value("${app.jwtSecret}")
     private String jwtSecret;
 
@@ -37,8 +37,22 @@ public class JwtTokenUtils {
                 .compact();
     }
 
-    public boolean validateToken(String token, String username) {
-    	return (username.equals(getUsernameFromToken(token)) && !isTokenExpired(token));
+    public boolean validateToken(String token) {
+//    	return (username.equals(getUsernameFromToken(token)) && !isTokenExpired(token));
+		try {
+			Jwts.parserBuilder().setSigningKey(jwtSecret).build().parse(token);
+			return true;
+		} catch (MalformedJwtException e) {
+			LOGGER.error("Invalid JWT token: {}", e.getMessage());
+		} catch (ExpiredJwtException e) {
+			LOGGER.error("JWT token is expired: {}", e.getMessage());
+		} catch (UnsupportedJwtException e) {
+			LOGGER.error("JWT token is unsupported: {}", e.getMessage());
+		} catch (IllegalArgumentException e) {
+			LOGGER.error("JWT claims string is empty: {}", e.getMessage());
+		}
+
+		return false;
     }
     
     public <T> T getClaimsFromToken(String token, Function<Claims, T> claimsResolver) {

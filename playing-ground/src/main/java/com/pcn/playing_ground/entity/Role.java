@@ -2,36 +2,47 @@ package com.pcn.playing_ground.entity;
 
 import java.time.LocalDate;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import com.pcn.playing_ground.seeder.ERoleConverter;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @Table(name = "ROLES")
 public class Role {
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "ROLE_ID")
     private Long roleId;
-    private String roleName;
+	@Convert(converter = ERoleConverter.class)
+	@Column(name = "ROLE_NAME")
+    private ERole roleName;
+	@Column(name = "DESCRIPTIONS")
     private String descriptions;
+	@Column(name = "UPDATE_BY")
     private String update_by;
+	@Column(name = "DATTIME")
     private LocalDate dattime;
     @Column(name = "created_at", nullable = false, updatable = false, insertable = false)
     private LocalDate created_at = LocalDate.now();;
-        
+
+	public Role(ERole name) {
+		this.roleName = name;
+	}
 	public Long getRoleId() {
 		return roleId;
 	}
 	public void setRoleId(Long roleId) {
 		this.roleId = roleId;
 	}
-	public String getRolename() {
+	public ERole getRolename() {
 		return roleName;
 	}
-	public void setRolename(String rolename) {
+	public void setRolename(ERole rolename) {
 		this.roleName = rolename;
 	}
 	public String getDescription() {
