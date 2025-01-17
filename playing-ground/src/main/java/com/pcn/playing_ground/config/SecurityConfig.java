@@ -5,10 +5,12 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.AuthenticationEntryPoint;
@@ -22,36 +24,53 @@ import com.pcn.playing_ground.service.impl.UserDetailsServiceImpl;
 @EnableMethodSecurity
 public class SecurityConfig {
 	
-    private final JwtAuthenticationFilter jwtAuthenticationFilter;
 	private final UserDetailsServiceImpl userDetailServiceImpl;
 	private final AuthenticationEntryPoint jwtAuthenEntry;
 	@Autowired
-	public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter, UserDetailsServiceImpl userDetailServiceImpl, AuthenticationEntryPoint jwtAuthenEntry) {
-		this.jwtAuthenticationFilter = jwtAuthenticationFilter;
+	public SecurityConfig(UserDetailsServiceImpl userDetailServiceImpl, AuthenticationEntryPoint jwtAuthenEntry) {
 		this.userDetailServiceImpl = userDetailServiceImpl;
 		this.jwtAuthenEntry = jwtAuthenEntry;
 	}
+    @Bean
+    public JwtAuthenticationFilter jwtAuthenticationFilter(){
+        return new JwtAuthenticationFilter();
+    }
+
 	@Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(csrf -> csrf.disable())
+            .exceptionHandling(exception -> exception
+                .authenticationEntryPoint(jwtAuthenEntry))
+            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests((requests) -> requests
                 .requestMatchers("/auth/**").permitAll()
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 .anyRequest().authenticated()
-            )
-            .exceptionHandling(exception -> exception
-            		.authenticationEntryPoint(jwtAuthenEntry))
-            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+            );
+        http.authenticationProvider(authenticationProvider());
+        http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
         
         return http.build();
     }
+	
+	@Bean
+    public DaoAuthenticationProvider authenticationProvider() {
+        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
+
+        authProvider.setUserDetailsService(userDetailServiceImpl);
+        authProvider.setPasswordEncoder(passwordEncoder());
+
+        return authProvider;
+    }
+	
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration, HttpSecurity http) throws Exception {
-    	AuthenticationManagerBuilder authenticationManagerBuilder = 
-                http.getSharedObject(AuthenticationManagerBuilder.class);
-            authenticationManagerBuilder.userDetailsService(userDetailServiceImpl)
-                .passwordEncoder(passwordEncoder());
-            return authenticationManagerBuilder.build();
+//    	AuthenticationManagerBuilder authenticationManagerBuilder = 
+//                http.getSharedObject(AuthenticationManagerBuilder.class);
+//            authenticationManagerBuilder.userDetailsService(userDetailServiceImpl)
+//                .passwordEncoder(passwordEncoder());
+//            return authenticationManagerBuilder.build();
+            return authenticationConfiguration.getAuthenticationManager();
     }
 
     @Bean

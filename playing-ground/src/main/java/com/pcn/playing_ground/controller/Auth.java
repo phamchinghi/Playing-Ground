@@ -5,6 +5,10 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.pcn.playing_ground.common.exceptions.RoleNotFoundException;
+import com.pcn.playing_ground.common.exceptions.UserAlreadyExistsException;
+import com.pcn.playing_ground.dto.response.ApiResponseDto;
+import com.pcn.playing_ground.service.AuthService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,79 +45,36 @@ public class Auth {
     private final AuthenticationManager authenticationManager;
     private final JwtTokenUtils jwtTokenUtils;
     private final UserService userService;
-	private final RoleRepo roleRepo;
-	private final PasswordEncoder encoder;	
-	
+	private final AuthService authService;
+
 	@Autowired
-	public Auth(AuthenticationManager authenticationManager, UserService userService, RoleRepo roleRepo,
-			PasswordEncoder encoder, JwtTokenUtils jwtTokenUtils) {
+	public Auth(AuthenticationManager authenticationManager, UserService userService, JwtTokenUtils jwtTokenUtils, AuthService authService) {
 		this.authenticationManager = authenticationManager;
 		this.userService = userService;
-		this.roleRepo = roleRepo;
-		this.encoder = encoder;
 		this.jwtTokenUtils = jwtTokenUtils;
+		this.authService = authService;
 	}
 
 
-	@PostMapping("/register/save")
-    public String registerUser(@ModelAttribute("registerRequest") @Valid SignupRequest request,
-            BindingResult result,
-            Model model){
-		if(request.getFirstname().isEmpty()) {
-			result.rejectValue("username", null, "First Name do not empty");
-		}
-		if(request.getLastname().isEmpty()) {
-			result.rejectValue("lastname", null, "Last Name do not empty");
-		}
-        // add check for username exists in a DB
-        if(userService.existsByUsername(request.getUsername()) && request.getUsername().trim().isEmpty()){
-        	result.rejectValue("username", null,
-                    "User name: " + request.getUsername() + " aready existing");
-        }
-        // add check for email exists in DB
-        if(userService.existsByEmail(request.getEmail()) && request.getEmail().trim().isEmpty()){
-        	result.rejectValue("email", null,
-                    "Email: " + request.getEmail() + " already existing");
-        }
-        if(request.getPassword().trim().isEmpty()) {
-        	result.rejectValue("password", null,
-                    "Password do not empty");
-        }
-        if(!request.getPassword().trim().equals(request.getConfirmPassword().trim())) {
-        	result.rejectValue("password", null,
-                    "Password does not match");
-        }
-        if(result.hasErrors()){
-        	model.addAttribute("registerRequest", request);
-    		return AppConstants.REGISTER;
-        }
-        // create user object
-        User user = new User();
-        user.setFirstname(request.getFirstname());
-        user.setLastname(request.getLastname());
-        user.setUsername(request.getUsername());
-        user.setEmail(request.getEmail());
-        user.setPasswrd(encoder.encode(request.getPassword()));
-        user.setUpdateby("admin");
-        user.setActive(true);
-        user.setDatime(LocalDate.now());
-        Role roles = roleRepo.findByRoleName("ADMIN").orElseThrow(() -> new RuntimeException("Role ADMIN not found"));;
-        user.setRoles(Collections.singleton(roles));
-        userService.save(user);
-        LOGGER.info("Received request: " + request);
-        LOGGER.info("BindingResult: " + result);
-        return AppConstants.REGISTER_SUCCESS;
-    }
-	
-	
+	@PostMapping("/signup")
+	public ResponseEntity<ApiResponseDto<?>> registerUser(@RequestBody @Valid SignupRequest request)
+			throws RoleNotFoundException, UserAlreadyExistsException {
+		return authService.signUpUser(request);
+	}
+
 	@PostMapping("/login")
     public ResponseEntity<?> processLogin(@RequestBody LoginRequest request) {
 		try {
+			Map<String, Object> response = new HashMap<>();
 			UsernamePasswordAuthenticationToken authenToken = new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword());
 			Authentication authentication = authenticationManager.authenticate(authenToken);
+			if(!authentication.isAuthenticated()) {
+				response.put("message", "Unauthenticated");
+			}
+//			var userDetail = userService.findByUsername(authentication.getName());
 			String jwt = jwtTokenUtils.generateToken(authentication.getName());
-			Map<String, String> response = new HashMap<>();
 			response.put("token", jwt);
+//			response.put("user", userDetail);
 			response.put("message", "Login successful");
 
 			return ResponseEntity.ok(response);

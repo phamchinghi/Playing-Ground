@@ -20,7 +20,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter{
 
     private JwtTokenUtils jwtTokenUtil;
     private UserDetailsService userDetailsService;
-	
+
+	public JwtAuthenticationFilter() {
+	}
+
 	@Autowired
 	public JwtAuthenticationFilter(JwtTokenUtils jwtTokenUtil, UserDetailsService userDetailsService) {
 		this.jwtTokenUtil = jwtTokenUtil;
@@ -33,7 +36,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter{
 		try {			
 			String jwt = getJWTFromRequest(request);
 			
-			if(jwt != null && jwtTokenUtil.validateToken(jwt, jwtTokenUtil.getUsernameFromToken(jwt))) {
+			if(jwt != null && jwtTokenUtil.validateToken(jwt)) {
 				String userName = jwtTokenUtil.getUsernameFromToken(jwt);
 				if(userName != null && SecurityContextHolder.getContext().getAuthentication() == null) {					
 					var userDetail = userDetailsService.loadUserByUsername(userName);
