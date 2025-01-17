@@ -3,6 +3,7 @@ package com.pcn.playing_ground.common;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.pcn.playing_ground.common.exceptions.FieldNotBlankException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -33,7 +34,7 @@ public class ExceptionHandling {
                 .badRequest()
                 .body(
                 		 ApiResponseDto.builder()
-                         .isSuccess(false)
+                         .success(false)
                          .message("Registration Failed: Please provide valid data.")
                          .response(errorMessage)
                          .build()
@@ -46,7 +47,7 @@ public class ExceptionHandling {
                 .status(HttpStatus.CONFLICT)
                 .body(
                         ApiResponseDto.builder()
-                                .isSuccess(false)
+                                .success(false)
                                 .message(exception.getMessage())
                                 .build()
                 );
@@ -58,11 +59,20 @@ public class ExceptionHandling {
                 .status(HttpStatus.NOT_FOUND)
                 .body(
                         ApiResponseDto.builder()
-                                .isSuccess(false)
+                                .success(false)
                                 .message(exception.getMessage())
                                 .build()
                 );
     }
-	
-	
+	@ExceptionHandler(value = FieldNotBlankException.class)
+	public ResponseEntity<ApiResponseDto<?>> FieldNotBlankException(FieldNotBlankException exception){
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(
+                        ApiResponseDto.builder()
+                                .success(false)
+                                .message(exception.getMessage())
+                                .build()
+                );
+    }
 }

@@ -1,14 +1,17 @@
 package com.pcn.playing_ground.dto.response;
 
-import lombok.Builder;
-import lombok.Data;
+import lombok.*;
 import lombok.experimental.Accessors;
 
 @Data
 @Builder
-@Accessors(fluent = true)
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class ApiResponseDto<T> {
-    private boolean isSuccess;
+    private boolean success;
     private String message;
     private T response;
 }
+

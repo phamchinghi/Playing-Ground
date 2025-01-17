@@ -25,7 +25,6 @@ public class JwtTokenUtils {
     // Create token
     @SuppressWarnings("deprecation")
     public String generateToken(String username) {
-//    	Key key = Keys.hmacShaKeyFor(jwtSecret.getBytes());
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + jwtExpirationMs);
 
@@ -38,7 +37,6 @@ public class JwtTokenUtils {
     }
 
     public boolean validateToken(String token) {
-//    	return (username.equals(getUsernameFromToken(token)) && !isTokenExpired(token));
 		try {
 			Jwts.parserBuilder().setSigningKey(jwtSecret).build().parse(token);
 			return true;
@@ -66,8 +64,6 @@ public class JwtTokenUtils {
     
 	public Claims getAllClaimsFromToken(String token) {
 		try {
-//			Key key = Keys.hmacShaKeyFor(jwtSecret.getBytes());
-//    		return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
 			Jws<Claims> claimsJws = Jwts.parserBuilder().setSigningKey(jwtSecret).build().parseClaimsJws(token);
 			return claimsJws.getBody();
 
@@ -94,6 +90,5 @@ public class JwtTokenUtils {
     	final Date expireDate = getExpirationDateFromToken(token);
     	return expireDate.before(new Date());
     }
-
 
 }

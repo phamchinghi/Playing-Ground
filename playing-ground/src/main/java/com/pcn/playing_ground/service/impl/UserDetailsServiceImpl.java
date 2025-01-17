@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import jakarta.transaction.Transactional;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -25,26 +26,10 @@ public class UserDetailsServiceImpl implements UserDetailsService{
 	}
 
 	@Override
+	@Transactional
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-		 Optional<User> userOpt = userRepo.findByUsername(username);
-	        
-        if (userOpt.isPresent()) {
-        	User user = userOpt.get();
-            return new org.springframework.security.core.userdetails.User(user.getUsername(),
-                    user.getPasswrd(),
-                    mapRolesToAuthorities(user.getRoles()));
-        }else{
-            throw new UsernameNotFoundException("Invalid username or password.");
-        }
+		 User user = userRepo.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("User Not Found with username: " + username));
+		 return UserDetailsImpl.build(user);
 	}
-	
-	private Collection< ? extends GrantedAuthority> mapRolesToAuthorities(Collection <Role> roles){
-		Collection < ? extends GrantedAuthority> mapRoles;
-		
-		mapRoles = roles.stream()
-				.map(role -> new SimpleGrantedAuthority(role.getRolename().toString()))
-				.collect(Collectors.toList());
-		
-        return mapRoles;
-	}
+
 }
