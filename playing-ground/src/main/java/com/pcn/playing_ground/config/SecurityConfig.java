@@ -19,6 +19,12 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import com.pcn.playing_ground.JWT.JwtAuthenticationFilter;
 import com.pcn.playing_ground.service.impl.UserDetailsServiceImpl;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.Arrays;
+import java.util.Collections;
 
 @Configuration
 @EnableMethodSecurity
@@ -48,7 +54,8 @@ public class SecurityConfig {
                 .anyRequest().authenticated()
             );
         http.authenticationProvider(authenticationProvider());
-        http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
+            .cors(cors -> cors.configurationSource(corsConfigurationSource()));
 
         return http.build();
     }
@@ -69,5 +76,18 @@ public class SecurityConfig {
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public static CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(Collections.singletonList("http://localhost:8081"));
+        configuration.setAllowedMethods(Arrays.asList(AppConstants.GET, AppConstants.GET, AppConstants.PUT, AppConstants.DELETE, AppConstants.OPTIONS));
+        configuration.setAllowedHeaders(Arrays.asList(AppConstants.AUTHOR, AppConstants.CONTENT_TYPE, AppConstants.CACHE));
+        configuration.setAllowCredentials(true);
+//        configuration.setMaxAge((long) 3600);
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
     }
 }
