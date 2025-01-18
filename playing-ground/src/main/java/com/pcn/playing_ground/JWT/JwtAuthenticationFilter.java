@@ -16,21 +16,17 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter{
 	private static Logger LOGGER = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
+	@Autowired
     private JwtTokenUtils jwtTokenUtil;
-    private UserDetailsService userDetailsService;
+	@Autowired
+	private UserDetailsService userDetailsService;
 
 	public JwtAuthenticationFilter() {
 	}
 
-	@Autowired
-	public JwtAuthenticationFilter(JwtTokenUtils jwtTokenUtil, UserDetailsService userDetailsService) {
-		this.jwtTokenUtil = jwtTokenUtil;
-		this.userDetailsService = userDetailsService;
-	}
 
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)

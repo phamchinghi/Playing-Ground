@@ -6,6 +6,7 @@ import java.util.function.Function;
 
 import com.pcn.playing_ground.controller.Auth;
 import io.jsonwebtoken.*;
+import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,7 +22,11 @@ public class JwtTokenUtils {
 
     @Value("${app.jwtExpirationMs}")
     private int jwtExpirationMs;
-    
+
+	@PostConstruct
+	public void init() {
+		System.out.println("JwtTokenUtil - jwtSecret: " + jwtSecret);
+	}
     // Create token
     @SuppressWarnings("deprecation")
     public String generateToken(String username) {
