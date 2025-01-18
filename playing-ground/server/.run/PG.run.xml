@@ -1,0 +1,12 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="PG" type="Application" factoryName="Application">
+    <envs>
+      <env name="app.jwtSecret" value="3zUAkM2oU001mWZreZW12njvnjiSC5sI3BQpFY24g3I=" />
+    </envs>
+    <option name="MAIN_CLASS_NAME" value="com.pcn.playing_ground.PlayingGroundApplication" />
+    <module name="playing-ground" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>
