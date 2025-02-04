@@ -4,11 +4,13 @@ package com.pcn.playing_ground.service.impl;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import com.pcn.playing_ground.JWT.JwtTokenUtils;
 import com.pcn.playing_ground.common.ErrorCode;
 import com.pcn.playing_ground.common.ExceptionHandling;
 import com.pcn.playing_ground.common.exceptions.AppException;
+import com.pcn.playing_ground.common.exceptions.RoleNotFoundException;
 import com.pcn.playing_ground.dto.response.ApiResponseDto;
 import com.pcn.playing_ground.dto.response.UserDetailResponse;
 import com.pcn.playing_ground.entity.ERole;
@@ -18,6 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -51,10 +54,14 @@ public class UserServiceImpl implements UserService{
 	}
 
     @Override
-    public ResponseEntity<ApiResponseDto<?>> getUserDetailByUserLogin(Long id) throws AppException {
+    public ResponseEntity<ApiResponseDto<?>> getUserDetailByUserLogin(Long id) throws AppException, RoleNotFoundException {
         LOGGER.info("Get user detail by login");
         User user = userRepo.findById(id).orElseThrow(() -> new AppException(ErrorCode.UNAUTHORIZED.getMessage()));
+        List<String> userRole = user.getRoles().stream()
+                .map(role -> new String(role.getRolename().name()))
+                .collect(Collectors.toList());
         UserDetailResponse response = UserDetailResponse.builder()
+                .userId(user.getUserId())
                 .email(user.getEmail())
                 .username(user.getUsername())
                 .passwrd(user.getPasswrd())
@@ -64,7 +71,7 @@ public class UserServiceImpl implements UserService{
                 .phone(user.getPhone())
                 .dattime(user.getDattime())
                 .update_by(user.getUpdate_by())
-                .roles(user.getRoles())
+                .roles(userRole)
                 .build();
         return ResponseEntity.ok(ApiResponseDto.builder()
                 .success(true)

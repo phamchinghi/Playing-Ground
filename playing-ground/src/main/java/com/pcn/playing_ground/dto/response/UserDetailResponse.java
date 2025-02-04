@@ -24,7 +24,7 @@ public class UserDetailResponse {
     private String update_by;
     private LocalDate dattime;
     private LocalDate created_at;
-    private Set<Role> roles;
+    private List<String> roles;
 
     public Long getUserId() {
         return userId;
@@ -113,11 +113,11 @@ public class UserDetailResponse {
     public void setCreated_at(LocalDate created_at) {
         this.created_at = created_at;
     }
-    public Set<Role> getRoles() {
+    public List<String> getRoles() {
         return roles;
     }
 
-    public void setRoles(Set<Role> roles) {
+    public void setRoles(List<String> roles) {
         this.roles = roles;
     }
 }

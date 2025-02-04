@@ -1,6 +1,7 @@
 package com.pcn.playing_ground.controller;
 
 import com.pcn.playing_ground.common.exceptions.AppException;
+import com.pcn.playing_ground.common.exceptions.RoleNotFoundException;
 import com.pcn.playing_ground.dto.response.ApiResponseDto;
 import com.pcn.playing_ground.service.UserService;
 import org.slf4j.Logger;
@@ -24,7 +25,7 @@ public class User {
     }
 
     @GetMapping("/{id}")
-    ResponseEntity<ApiResponseDto<?>> getUser(@PathVariable Long id) throws AppException {
+    ResponseEntity<ApiResponseDto<?>> getUser(@PathVariable Long id) throws AppException, RoleNotFoundException {
         return userService.getUserDetailByUserLogin(id);
     }
 
