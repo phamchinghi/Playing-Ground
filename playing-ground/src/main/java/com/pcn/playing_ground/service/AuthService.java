@@ -1,0 +1,19 @@
+package com.pcn.playing_ground.service;
+
+import com.pcn.playing_ground.common.exceptions.FieldNotBlankException;
+import com.pcn.playing_ground.common.exceptions.RoleNotFoundException;
+import com.pcn.playing_ground.common.exceptions.UserAlreadyExistsException;
+import com.pcn.playing_ground.dto.request.LoginRequest;
+import com.pcn.playing_ground.dto.request.RefreshTokenRequest;
+import com.pcn.playing_ground.dto.request.SignupRequest;
+import com.pcn.playing_ground.dto.response.ApiResponseDto;
+import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+
+@Service
+public interface AuthService {
+    ResponseEntity<ApiResponseDto<?>> signUpUser(SignupRequest signUpRequestDto) throws UserAlreadyExistsException, RoleNotFoundException;
+    ResponseEntity<ApiResponseDto<?>> login(LoginRequest loginRequest, HttpServletResponse servletResponse) throws FieldNotBlankException;
+    ResponseEntity<ApiResponseDto<?>> refreshToken(RefreshTokenRequest tokenRequest);
+}
