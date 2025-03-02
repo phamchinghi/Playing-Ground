@@ -1,145 +1,49 @@
 package com.pcn.playing_ground.entity;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.Set;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import jakarta.persistence.*;
+import lombok.*;
 
-@Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "USERS")
+@Getter
+@Setter
 @Builder
-public class User{
-	@Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long userId;
-    private String username;
-    private String passwrd; // hash password
-    private String email;
-    private String firstname;
-    private String lastname;
-    private String phone;
-    @Column(nullable = false)
-    private boolean is_active;
-    private String update_by;
-    private LocalDate dattime;
-    @Column(name = "created_at", nullable = false, updatable = false, insertable = false)
-    private LocalDate created_at;
-    
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "USER_ROLES",
-            joinColumns = @JoinColumn(name = "USER_ID"),
-            inverseJoinColumns = @JoinColumn(name = "ROLE_ID"))
-    private Set<Role> roles;
-    
+@Table(name = "USERS")
+public class User extends BaseEntity{
 
-	public Long getUserId() {
-		return userId;
-	}
+	@Column(name = "USERNAME", length = 50, unique = true, nullable = false)
+	private String username;
 
-	public void setUserId(Long userId) {
-		this.userId = userId;
-	}
+	@Column(name = "PASSWRD", length = 255, nullable = false)
+	private String passwrd; // hash password
 
-	public String getUsername() {
-		return username;
-	}
+	@Column(name = "EMAIL", length = 100, unique = true, nullable = false)
+	private String email;
 
-	public void setUsername(String username) {
-		this.username = username;
-	}
+	@Column(name = "FIRSTNAME", length = 30, nullable = false)
+	private String firstname;
 
-	public String getPasswrd() {
-		return passwrd;
-	}
+	@Column(name = "LASTNAME", length = 50, nullable = false)
+	private String lastname;
 
-	public void setPasswrd(String passwrd) {
-		this.passwrd = passwrd;
-	}
+	@Column(name = "PHONE", length = 10)
+	private String phone;
 
-	public String getEmail() {
-		return email;
-	}
+	@Column(name = "IS_ACTIVE", columnDefinition = "BIT default 1", nullable = false)
+	private boolean is_active;
 
-	public void setEmail(String email) {
-		this.email = email;
-	}
-
-	public String getFirstname() {
-		return firstname;
-	}
-
-	public void setFirstname(String firstname) {
-		this.firstname = firstname;
-	}
-	public String getLastname() {
-		return lastname;
-	}
-	
-	public void setLastname(String lastname) {
-		this.lastname = lastname;
-	}
-
-	public String getPhone() {
-		return phone;
-	}
-
-	public void setPhone(String phone) {
-		this.phone = phone;
-	}
-
-	public boolean isActive() {
-		return is_active;
-	}
-
-	public void setActive(boolean isActive) {
-		this.is_active = isActive;
-	}
-
-	public String getUpdateby() {
-		return update_by;
-	}
-
-	public void setUpdateby(String updateby) {
-		this.update_by = updateby;
-	}
-
-	public LocalDate getDatime() {
-		return dattime;
-	}
-
-	public void setDatime(LocalDate datime) {
-		this.dattime = datime;
-	}
-
-	public LocalDate getCreated_at() {
-		return created_at;
-	}
-
-	public void setCreated_at(LocalDate created_at) {
-		this.created_at = created_at;
-	}
-
-	public Set<Role> getRoles() {
-		return roles;
-	}
-
-	public void setRoles(Set<Role> roles) {
-		this.roles = roles;
-	}
+	@ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+	@JoinTable(
+			name = "USER_ROLES",
+			joinColumns = @JoinColumn(name = "USER_ID", referencedColumnName = "ID"),
+			inverseJoinColumns = @JoinColumn(name = "ROLE_ID", referencedColumnName = "ID")
+	)
+	private Set<Role> roles = new HashSet<>();
 }
+

@@ -1,0 +1,21 @@
+package com.pcn.playing_ground.config;
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.data.domain.AuditorAware;
+import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
+import org.springframework.security.core.context.SecurityContextHolder;
+
+import java.util.Optional;
+
+@Configuration
+@EnableJpaAuditing(auditorAwareRef = "auditorAware")
+public class JpaConfig {
+    @Bean
+    public AuditorAware<String> auditorAware() {
+        return () -> {
+            // Lấy thông tin người dùng hiện tại từ SecurityContext
+            return Optional.ofNullable(SecurityContextHolder.getContext().getAuthentication().getName());
+        };
+    }
+}

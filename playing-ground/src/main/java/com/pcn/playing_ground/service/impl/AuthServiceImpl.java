@@ -12,7 +12,9 @@ import com.pcn.playing_ground.dto.response.ApiResponseDto;
 import com.pcn.playing_ground.dto.response.JwtResponse;
 import com.pcn.playing_ground.dto.response.LoginResponse;
 import com.pcn.playing_ground.entity.ERole;
+import com.pcn.playing_ground.entity.Role;
 import com.pcn.playing_ground.entity.User;
+import com.pcn.playing_ground.entity.UserRole;
 import com.pcn.playing_ground.factories.RoleFactory;
 import com.pcn.playing_ground.service.AuthService;
 import com.pcn.playing_ground.service.UserService;
@@ -31,7 +33,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Component
 public class AuthServiceImpl implements AuthService {
@@ -140,7 +145,7 @@ public class AuthServiceImpl implements AuthService {
 
     /*Create new user*/
     private User createUser(SignupRequest signUpRequest) throws RoleNotFoundException {
-        return User.builder()
+        User user = User.builder()
                 .email(signUpRequest.getEmail())
                 .username(signUpRequest.getUsername())
                 .passwrd(passwordEncoder.encode(signUpRequest.getPassword()))
@@ -148,9 +153,9 @@ public class AuthServiceImpl implements AuthService {
                 .firstname(signUpRequest.getFirstname())
                 .lastname(signUpRequest.getLastname())
                 .phone(signUpRequest.getPhone())
-                .dattime(LocalDate.now())
-                .update_by(ERole.ADMIN.toString())
                 .roles(roleFactory.determineRoles(signUpRequest.getRole()))
                 .build();
+        user.setUpdateBy(ERole.ADMIN.toString());
+        return user;
     }
 }
