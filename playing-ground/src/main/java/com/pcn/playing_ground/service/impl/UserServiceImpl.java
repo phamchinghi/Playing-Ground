@@ -58,10 +58,10 @@ public class UserServiceImpl implements UserService{
         LOGGER.info("Get user detail by login");
         User user = userRepo.findById(id).orElseThrow(() -> new AppException(ErrorCode.UNAUTHORIZED.getMessage()));
         List<String> userRole = user.getRoles().stream()
-                .map(role -> new String(role.getRolename().name()))
+                .map(role -> role.getRoleName().name())
                 .collect(Collectors.toList());
         UserDetailResponse response = UserDetailResponse.builder()
-                .userId(user.getUserId())
+                .userId(user.getId())
                 .email(user.getEmail())
                 .username(user.getUsername())
                 .passwrd(user.getPasswrd())
@@ -69,8 +69,8 @@ public class UserServiceImpl implements UserService{
                 .firstname(user.getFirstname())
                 .lastname(user.getLastname())
                 .phone(user.getPhone())
-                .dattime(user.getDattime())
-                .update_by(user.getUpdate_by())
+                .dattime(user.getDattime().toLocalDate())
+                .update_by(user.getUpdateBy())
                 .roles(userRole)
                 .build();
         return ResponseEntity.ok(ApiResponseDto.builder()

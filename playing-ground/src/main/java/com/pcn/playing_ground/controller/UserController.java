@@ -14,13 +14,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/user")
-public class User {
+@RequestMapping("/profile")
+public class UserController {
     private final UserService userService;
-    private static Logger LOGGER = LoggerFactory.getLogger(User.class);
+    private static Logger LOGGER = LoggerFactory.getLogger(UserController.class);
 
     @Autowired
-    public User(UserService userService) {
+    public UserController(UserService userService) {
         this.userService = userService;
     }
 
