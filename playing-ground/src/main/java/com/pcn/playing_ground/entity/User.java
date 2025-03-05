@@ -3,6 +3,7 @@ package com.pcn.playing_ground.entity;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import jakarta.persistence.*;
@@ -41,9 +42,16 @@ public class User extends BaseEntity{
 	@ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
 	@JoinTable(
 			name = "USER_ROLES",
-			joinColumns = @JoinColumn(name = "USER_ID", referencedColumnName = "ID"),
-			inverseJoinColumns = @JoinColumn(name = "ROLE_ID", referencedColumnName = "ID")
+			joinColumns = @JoinColumn(name = "UserID", referencedColumnName = "ID"),
+			inverseJoinColumns = @JoinColumn(name = "RoleID", referencedColumnName = "ID")
 	)
 	private Set<Role> roles = new HashSet<>();
+
+	@OneToMany(mappedBy = "user")
+	private List<PasswordReset> passwordResets;
+	@OneToMany(mappedBy = "user")
+	private List<UserLog> userLogs;
+	@OneToMany(mappedBy = "user")
+	private List<OrderAssignment> orderAssignments;
 }
 

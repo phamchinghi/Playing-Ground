@@ -1,14 +1,19 @@
 package com.pcn.playing_ground.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
-import org.springframework.data.annotation.CreatedDate;
+import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.LastModifiedBy;
-import org.springframework.data.annotation.LastModifiedDate;
 
 import java.time.LocalDateTime;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 @MappedSuperclass
 public abstract class BaseEntity {
     @Id
@@ -20,11 +25,18 @@ public abstract class BaseEntity {
     @Column(name = "UPDATE_BY", length = 30, nullable = false)
     private String updateBy;
 
-    @LastModifiedDate
+    @UpdateTimestamp
     @Column(name = "DATTIME")
     private LocalDateTime dattime;
 
-    @CreatedDate
+    @CreationTimestamp
     @Column(name = "CREATED_AT", nullable = false)
-    private LocalDateTime createdAt = LocalDateTime.now();
+    private LocalDateTime createdAt;
+
+    @PrePersist
+    public void prePersist() {
+        if (createdAt == null) {
+            createdAt = LocalDateTime.now();
+        }
+    }
 }

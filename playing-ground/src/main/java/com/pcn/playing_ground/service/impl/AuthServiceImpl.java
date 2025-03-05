@@ -14,7 +14,6 @@ import com.pcn.playing_ground.dto.response.LoginResponse;
 import com.pcn.playing_ground.entity.ERole;
 import com.pcn.playing_ground.entity.Role;
 import com.pcn.playing_ground.entity.User;
-import com.pcn.playing_ground.entity.UserRole;
 import com.pcn.playing_ground.factories.RoleFactory;
 import com.pcn.playing_ground.service.AuthService;
 import com.pcn.playing_ground.service.UserService;
@@ -66,7 +65,7 @@ public class AuthServiceImpl implements AuthService {
         return ResponseEntity.status(HttpStatus.CREATED).body(
                 ApiResponseDto.builder()
                         .success(true)
-                        .message("User account has been successfully created!")
+                        .message("Your account has been created successfully!")
                         .build()
         );
     }

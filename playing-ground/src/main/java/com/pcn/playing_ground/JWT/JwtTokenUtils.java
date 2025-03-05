@@ -1,13 +1,11 @@
 package com.pcn.playing_ground.JWT;
 
-import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 
-import com.pcn.playing_ground.controller.Auth;
 import com.pcn.playing_ground.service.impl.UserDetailsImpl;
 import io.jsonwebtoken.*;
 import jakarta.annotation.PostConstruct;
@@ -19,8 +17,6 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
-
-import io.jsonwebtoken.security.Keys;
 
 @Component
 public class JwtTokenUtils {
