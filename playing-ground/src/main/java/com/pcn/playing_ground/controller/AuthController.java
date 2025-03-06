@@ -7,6 +7,7 @@ import com.pcn.playing_ground.dto.request.RefreshTokenRequest;
 import com.pcn.playing_ground.dto.response.ApiResponseDto;
 import com.pcn.playing_ground.service.AuthService;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,13 +34,13 @@ public class AuthController {
 
 
 	@PostMapping("/signup")
-	public ResponseEntity<ApiResponseDto<?>> registerUser(@RequestBody SignupRequest request)
+	public ResponseEntity<ApiResponseDto<?>> registerUser(@RequestBody @Valid SignupRequest request)
 			throws RoleNotFoundException, UserAlreadyExistsException {
 		return authService.signUpUser(request);
 	}
 
 	@PostMapping(value = "/login")
-    public ResponseEntity<?> processLogin(@RequestBody LoginRequest request, HttpServletResponse response) throws FieldNotBlankException {
+    public ResponseEntity<?> processLogin(@RequestBody @Valid LoginRequest request, HttpServletResponse response) throws FieldNotBlankException {
 		return authService.login(request, response);
     }
 

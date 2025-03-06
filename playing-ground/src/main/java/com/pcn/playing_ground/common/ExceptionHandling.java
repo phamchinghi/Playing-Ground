@@ -29,7 +29,9 @@ public class ExceptionHandling {
                                 .build()
                 );
 	}
-	
+	/*	This Exception handle the Validation's annotation
+	*   Such as: display message in @NotBlank(message="something error")
+	* */
 	@ExceptionHandler(value = MethodArgumentNotValidException.class)
     public ResponseEntity<ApiResponseDto<?>> MethodArgumentNotValidExceptionHandler(MethodArgumentNotValidException exception) {
 
@@ -43,7 +45,7 @@ public class ExceptionHandling {
                 .body(
                 		 ApiResponseDto.builder()
                          .success(false)
-                         .message("Registration Failed: Please provide valid data.")
+                         .message("Please provide valid data.")
                          .response(errorMessage)
                          .build()
                 );
