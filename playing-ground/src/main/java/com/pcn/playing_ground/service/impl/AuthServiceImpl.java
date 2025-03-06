@@ -71,28 +71,24 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public ResponseEntity<ApiResponseDto<?>> login(LoginRequest loginRequest, HttpServletResponse servletResponse) throws FieldNotBlankException{
-        if(loginRequest.getUsername().isEmpty() || loginRequest.getPassword().isEmpty()){
-            throw new FieldNotBlankException("Login failed: Username or Password must be enter");
-        }
-        try {
-            UsernamePasswordAuthenticationToken authenToken = new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword());
-            Authentication authentication = authenticationManager.authenticate(authenToken);
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-            String jwt = jwtTokenUtils.generateToken(authentication.getName());
+    public ResponseEntity<ApiResponseDto<?>> login(LoginRequest loginRequest, HttpServletResponse servletResponse) throws FieldNotBlankException {
+        UsernamePasswordAuthenticationToken authenToken = new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword());
+        Authentication authentication = authenticationManager.authenticate(authenToken);
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        String jwt = jwtTokenUtils.generateToken(authentication.getName());
 
-            UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-            List<String> rolesList = userDetails.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList();
-            String BEARER = "Bearer";
-            LoginResponse response = LoginResponse.builder()
-                    .id(userDetails.getId())
-                    .username(userDetails.getUsername())
-                    .email(userDetails.getEmail())
-                    .token(jwt)
-                    .type(BEARER)
-                    .roles(rolesList)
-                    .build();
-/*handle refresh token later*/
+        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+        List<String> rolesList = userDetails.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList();
+        String BEARER = "Bearer";
+        LoginResponse response = LoginResponse.builder()
+                .id(userDetails.getId())
+                .username(userDetails.getUsername())
+                .email(userDetails.getEmail())
+                .token(jwt)
+                .type(BEARER)
+                .roles(rolesList)
+                .build();
+        /*handle refresh token later*/
 //            Cookie cookie = new Cookie("refreshToken", refreshToken);
 //            cookie.setHttpOnly(true);
 //            cookie.setSecure(false); // true if allow sends only through HTTPS
@@ -101,24 +97,11 @@ public class AuthServiceImpl implements AuthService {
 //            cookie.setMaxAge(14 * 24 * 60 * 60); // 2 weeks
 //            servletResponse.addCookie(cookie);
 
-            return ResponseEntity.ok(ApiResponseDto.builder()
-                    .success(true)
-                    .message("Sign in successfully!")
-                    .response(response)
-                    .build());
-        } catch (BadCredentialsException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
-                    ApiResponseDto.builder()
-                            .success(false)
-                            .message("Invalid username or password")
-                            .build());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
-                    ApiResponseDto.builder()
-                            .success(false)
-                            .message("An unexpected error occurred")
-                            .build());
-        }
+        return ResponseEntity.ok(ApiResponseDto.builder()
+                .success(true)
+                .message("Sign in successfully!")
+                .response(response)
+                .build());
     }
 
     @Override
