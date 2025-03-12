@@ -17,6 +17,7 @@ import com.pcn.playing_ground.entity.User;
 import com.pcn.playing_ground.factories.RoleFactory;
 import com.pcn.playing_ground.service.AuthService;
 import com.pcn.playing_ground.service.UserService;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -76,8 +77,8 @@ public class AuthServiceImpl implements AuthService {
         Authentication authentication = authenticationManager.authenticate(authenToken);
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String jwt = jwtTokenUtils.generateToken(authentication.getName());
-
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+        String refreshToken = jwtTokenUtils.generateRefreshToken(userDetails);
         List<String> rolesList = userDetails.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList();
         String BEARER = "Bearer";
         LoginResponse response = LoginResponse.builder()
@@ -85,17 +86,18 @@ public class AuthServiceImpl implements AuthService {
                 .username(userDetails.getUsername())
                 .email(userDetails.getEmail())
                 .token(jwt)
+                .refreshToken(refreshToken)
                 .type(BEARER)
                 .roles(rolesList)
                 .build();
-        /*handle refresh token later*/
-//            Cookie cookie = new Cookie("refreshToken", refreshToken);
-//            cookie.setHttpOnly(true);
-//            cookie.setSecure(false); // true if allow sends only through HTTPS
-//            cookie.setDomain("localhost");
-//            cookie.setPath("/");
-//            cookie.setMaxAge(14 * 24 * 60 * 60); // 2 weeks
-//            servletResponse.addCookie(cookie);
+        /*handle refresh token */
+        Cookie cookie = new Cookie("refreshToken", refreshToken);
+        cookie.setHttpOnly(true);
+        cookie.setSecure(true); // true if allow sends only through HTTPS
+        cookie.setDomain("localhost");
+        cookie.setPath("/");
+        cookie.setMaxAge(7 * 24 * 60 * 60); // 1 week
+        servletResponse.addCookie(cookie);
 
         return ResponseEntity.ok(ApiResponseDto.builder()
                 .success(true)
