@@ -1,5 +1,6 @@
 package com.pcn.playing_ground.JWT;
 
+import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -8,6 +9,7 @@ import java.util.function.Function;
 
 import com.pcn.playing_ground.service.impl.UserDetailsImpl;
 import io.jsonwebtoken.*;
+import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,19 +22,21 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class JwtTokenUtils {
-	private static Logger LOGGER = LoggerFactory.getLogger(JwtTokenUtils.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(JwtTokenUtils.class);
 	@Value("${app.jwtSecret}")
     private String jwtSecret;
 
     @Value("${app.jwtExpirationMs}")
     private int jwtExpirationMs;
 
+	private Key key;
+
 	@PostConstruct
 	public void init() {
-		System.out.println("JwtTokenUtil - jwtSecret: " + jwtSecret);
+		this.key = Keys.hmacShaKeyFor(jwtSecret.getBytes());
+        LOGGER.info("JwtTokenUtil - jwtSecret: {}", jwtSecret);
 	}
     // Create token
-    @SuppressWarnings("deprecation")
     public String generateToken(String username) {
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + jwtExpirationMs);
@@ -41,13 +45,13 @@ public class JwtTokenUtils {
                 .setSubject(username)
                 .setIssuedAt(new Date())
                 .setExpiration(expiryDate)
-                .signWith(SignatureAlgorithm.HS256,jwtSecret)
+                .signWith(key,SignatureAlgorithm.HS256)
                 .compact();
     }
 
     public boolean validateToken(String token) {
 		try {
-			Jwts.parserBuilder().setSigningKey(jwtSecret).build().parse(token);
+			Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
 			return true;
 		} catch (MalformedJwtException e) {
 			LOGGER.error("Invalid JWT token: {}", e.getMessage());
@@ -72,23 +76,8 @@ public class JwtTokenUtils {
     }
     
 	public Claims getAllClaimsFromToken(String token) {
-		try {
-			Jws<Claims> claimsJws = Jwts.parserBuilder().setSigningKey(jwtSecret).build().parseClaimsJws(token);
+			Jws<Claims> claimsJws = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
 			return claimsJws.getBody();
-
-		} catch (io.jsonwebtoken.ExpiredJwtException e) {
-			LOGGER.error("JWT has expired: " + e.getMessage());
-			throw e;
-		} catch (io.jsonwebtoken.SignatureException e) {
-			LOGGER.error("Invalid JWT signature: " + e.getMessage());
-			throw e;
-		} catch (io.jsonwebtoken.MalformedJwtException e) {
-			LOGGER.error("Malformed JWT token: " + e.getMessage());
-			throw e;
-		} catch (Exception e) {
-			LOGGER.error("Unexpected error while parsing JWT: " + e.getMessage());
-			throw e;
-		}
     }
     
     public Date getExpirationDateFromToken(String token) {
@@ -107,23 +96,7 @@ public class JwtTokenUtils {
 	private String createRefreshToken(Map<String, Object> claims, String subject) {
 		return Jwts.builder().setClaims(claims).setSubject(subject).setIssuedAt(new Date(System.currentTimeMillis()))
 				.setExpiration(new Date(System.currentTimeMillis() + jwtExpirationMs)) // 7 days
-				.signWith(SignatureAlgorithm.HS256,jwtSecret)
+				.signWith(key, SignatureAlgorithm.HS256)
 				.compact();
-	}
-	public static Optional<String> getCurrentLogin(){
-		SecurityContext contextHolder = SecurityContextHolder.getContext();
-		return Optional.ofNullable(extractPrincipal(contextHolder.getAuthentication()));
-	}
-
-	private static String extractPrincipal(Authentication authentication) {
-		if(authentication == null) return null;
-
-		if(authentication.getPrincipal() instanceof UserDetailsImpl userDetails) {
-			return userDetails.getUsername();
-		}
-		else if (authentication.getPrincipal() instanceof  String s) {
-			return s;
-		}
-		return null;
 	}
 }
