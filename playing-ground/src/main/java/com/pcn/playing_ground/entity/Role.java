@@ -23,8 +23,5 @@ public class Role extends BaseEntity{
 	@Column(name = "DESCRIPTIONS")
 	private String descriptions;
 
-	public Role(ERole name) {
-		this.roleName = name;
-	}
 }
 

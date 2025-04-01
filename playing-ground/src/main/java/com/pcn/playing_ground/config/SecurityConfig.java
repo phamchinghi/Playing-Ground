@@ -34,7 +34,7 @@ public class SecurityConfig {
 	private final UserDetailsServiceImpl userDetailServiceImpl;
 	private final AuthenticationEntryPoint jwtAuthenEntry;
 
-    private final String[] URLList = {"/","/home","/login","/signup","/profile",AppConstants.GET, AppConstants.CSS, AppConstants.JS, AppConstants.IMG, AppConstants.SCSS,AppConstants.VENDOR};
+    private final String[] URLList = {"/","/home","/login","/signup","/contact","/error"};
 	@Autowired
 	public SecurityConfig(UserDetailsServiceImpl userDetailServiceImpl, AuthenticationEntryPoint jwtAuthenEntry) {
 		this.userDetailServiceImpl = userDetailServiceImpl;
