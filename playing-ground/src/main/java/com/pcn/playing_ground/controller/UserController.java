@@ -14,7 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/profile")
+@RequestMapping("/user")
 public class UserController {
     private final UserService userService;
     private static Logger LOGGER = LoggerFactory.getLogger(UserController.class);
@@ -29,8 +29,18 @@ public class UserController {
         return userService.getUserDetailByUserLogin(id);
     }
 
+    @GetMapping("/getAllUser")
+    ResponseEntity<ApiResponseDto<?>> getAllUser(){
+        return userService.getAllUser();
+    }
+
     @PutMapping("/update")
     ResponseEntity<ApiResponseDto<?>> updateUser(@RequestBody @Valid UserUpdateRequest updateRequest) throws AppException, FieldNotBlankException {
        return userService.updateUser(updateRequest);
+    }
+
+    @PostMapping("/delete/{id}")
+    ResponseEntity<ApiResponseDto<?>> deleteUser(@PathVariable Long id) throws AppException {
+        return userService.deleteUser(id);
     }
 }

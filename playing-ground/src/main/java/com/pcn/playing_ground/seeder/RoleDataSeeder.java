@@ -29,7 +29,10 @@ public class RoleDataSeeder {
 
         for(ERole erole: roles) {
             if (roleRepository.findByRoleName(erole)==null) {
-                roleRepository.save(new Role(erole));
+                Role role = new Role();
+                role.setRoleName(erole);
+                role.setDescriptions(erole.name());
+                roleRepository.save(role);
             }
         }
 

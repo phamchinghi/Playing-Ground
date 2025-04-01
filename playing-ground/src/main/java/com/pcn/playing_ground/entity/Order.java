@@ -31,8 +31,5 @@ public class Order extends BaseEntity{
     private List<Payment> payments;
 
     @OneToMany(mappedBy = "order")
-    private List<OrderAssignment> orderAssignments;
-
-    @OneToMany(mappedBy = "order")
     private List<OrderPromotion> orderPromotions;
 }
