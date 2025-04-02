@@ -51,6 +51,7 @@ public class User extends BaseEntity{
 	private List<PasswordReset> passwordResets;
 	@OneToMany(mappedBy = "user")
 	private List<UserLog> userLogs;
-
+	@OneToMany(mappedBy = "user")
+	private List<Order> orders;
 }
 

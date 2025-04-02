@@ -14,6 +14,7 @@ public enum ErrorCode {
     ROLE_EXISTED(400, "Role existed", HttpStatus.BAD_REQUEST),
     ROLE_NOT_EXISTED(400, "Role not existed", HttpStatus.BAD_REQUEST),
     CART_NOT_FOUND(404, "Cart not found", HttpStatus.NOT_FOUND),
+    ORDER_NOT_FOUND(404, "Order not found", HttpStatus.NOT_FOUND),
     REFRESH_TOKEN_EXPIRED(401, "Refresh token expired", HttpStatus.BAD_REQUEST),
     REFRESH_TOKEN_INVALID(401, "Refresh token invalid", HttpStatus.BAD_REQUEST),
     TOKEN_BLACK_LIST(400, "Token black list", HttpStatus.BAD_REQUEST),
