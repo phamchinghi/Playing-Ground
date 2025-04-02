@@ -16,6 +16,9 @@ public class Order extends BaseEntity{
     @ManyToOne
     @JoinColumn(name = "CustomerID", nullable = false)
     private Customer customer;
+    @ManyToOne
+    @JoinColumn(name = "UserID", nullable = false)
+    private User user;
 
     @Column(nullable = false)
     private LocalDateTime orderDate;
